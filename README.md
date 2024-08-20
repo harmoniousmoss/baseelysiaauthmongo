@@ -8,7 +8,7 @@ Here is the basic Elysia.js API with MongoDB Auth. This is a simple API that use
 - [ ] User Update
 - [ ] User Delete
 - [ ] User List
-- [ ] Admin seed
+- [x] Admin seed
 - [ ] User approval
 - [ ] User role
 - [ ] User permission
