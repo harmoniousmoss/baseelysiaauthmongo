@@ -1,5 +1,5 @@
-## Basic Elysia.js API With MongoDB Auth
-Here is the basic Elysia.js API with MongoDB Auth. This is a simple API that uses MongoDB for authentication. This API has the following features:
+## Basic Elysia.js With MongoDB Auth
+Here is the basic Elysia.js with MongoDB Auth. This is a simple API that uses MongoDB for authentication. This API has the following features:
 
 - [x] User Registration
 - [ ] User Login
