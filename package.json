@@ -6,11 +6,14 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "elysia": "latest",
-    "mongodb": "^6.8.0"
+    "mongodb": "^6.8.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "bun-types": "latest"
   },
   "module": "src/index.js"
