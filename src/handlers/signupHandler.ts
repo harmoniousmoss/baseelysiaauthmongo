@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { signUpSchema } from "../schemas/userSchema";
 import { getClient } from "../utils/mongodb";
@@ -47,16 +48,12 @@ export const signupHandler = async ({ body }: { body: SignupRequestBody }) => {
   const db = getClient().db();
   await db.collection("users").insertOne(newUser);
 
-  // Generate a verification token (for simplicity, using a hashed email)
-  const verificationToken = bcrypt.hashSync(merchant_email, 10);
-
-  // Ensure required environment variables are defined
-  const smtpUser = process.env.SMTP_USER;
-  const adminEmail = process.env.ADMIN_EMAIL;
-
-  if (!smtpUser || !adminEmail) {
-    throw new Error("SMTP_USER or ADMIN_EMAIL is not defined in .env file");
-  }
+  // Generate a JWT token
+  const verificationToken = jwt.sign(
+    { email: merchant_email },
+    process.env.JWT_SECRET || "your_jwt_secret",
+    { expiresIn: "1h" } // Token expires in 1 hour
+  );
 
   // Send email verification to the user
   const verificationLink = `http://localhost:3000/verify-email?token=${verificationToken}`;
@@ -69,18 +66,21 @@ export const signupHandler = async ({ body }: { body: SignupRequestBody }) => {
   );
 
   // Send an email to the admin for approval
-  await sendEmail(
-    adminEmail,
-    "New User Signup Requires Approval",
-    `<p>A new user has signed up and requires approval:</p>
-     <ul>
-       <li><strong>Name:</strong> ${merchant_name}</li>
-       <li><strong>Email:</strong> ${merchant_email}</li>
-       <li><strong>Role:</strong> ${merchant_role}</li>
-       <li><strong>Status:</strong> ${merchant_status}</li>
-     </ul>
-     <p>Please review and approve the signup in the admin panel.</p>`
-  );
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (adminEmail) {
+    await sendEmail(
+      adminEmail,
+      "New User Signup Requires Approval",
+      `<p>A new user has signed up and requires approval:</p>
+       <ul>
+         <li><strong>Name:</strong> ${merchant_name}</li>
+         <li><strong>Email:</strong> ${merchant_email}</li>
+         <li><strong>Role:</strong> ${merchant_role}</li>
+         <li><strong>Status:</strong> ${merchant_status}</li>
+       </ul>
+       <p>Please review and approve the signup in the admin panel.</p>`
+    );
+  }
 
   return {
     status: 201,
