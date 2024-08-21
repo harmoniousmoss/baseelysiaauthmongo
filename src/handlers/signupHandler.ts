@@ -1,11 +1,12 @@
-// src/handlers/signupHandler.ts
 import bcrypt from "bcrypt";
 import { signUpSchema } from "../schemas/userSchema";
 import { getClient } from "../utils/mongodb";
 import { SignupRequestBody } from "../interfaces/userInterfaces";
+import { sendEmail } from "../utils/email";
 
 export const signupHandler = async ({ body }: { body: SignupRequestBody }) => {
   const result = signUpSchema.safeParse(body);
+
   if (!result.success) {
     return {
       status: 400,
@@ -46,8 +47,46 @@ export const signupHandler = async ({ body }: { body: SignupRequestBody }) => {
   const db = getClient().db();
   await db.collection("users").insertOne(newUser);
 
+  // Generate a verification token (for simplicity, using a hashed email)
+  const verificationToken = bcrypt.hashSync(merchant_email, 10);
+
+  // Ensure required environment variables are defined
+  const smtpUser = process.env.SMTP_USER;
+  const adminEmail = process.env.ADMIN_EMAIL;
+
+  if (!smtpUser || !adminEmail) {
+    throw new Error("SMTP_USER or ADMIN_EMAIL is not defined in .env file");
+  }
+
+  // Send email verification to the user
+  const verificationLink = `http://localhost:3000/verify-email?token=${verificationToken}`;
+  await sendEmail(
+    merchant_email,
+    "Verify your email address",
+    `<p>Hi ${merchant_name},</p>
+     <p>Thank you for signing up. Please verify your email address by clicking the link below:</p>
+     <p><a href="${verificationLink}">Verify Email</a></p>`
+  );
+
+  // Send an email to the admin for approval
+  await sendEmail(
+    adminEmail,
+    "New User Signup Requires Approval",
+    `<p>A new user has signed up and requires approval:</p>
+     <ul>
+       <li><strong>Name:</strong> ${merchant_name}</li>
+       <li><strong>Email:</strong> ${merchant_email}</li>
+       <li><strong>Role:</strong> ${merchant_role}</li>
+       <li><strong>Status:</strong> ${merchant_status}</li>
+     </ul>
+     <p>Please review and approve the signup in the admin panel.</p>`
+  );
+
   return {
     status: 201,
-    body: { message: "User signup successful", user: newUser },
+    body: {
+      message:
+        "User signup successful. Please check your email for verification.",
+    },
   };
 };
