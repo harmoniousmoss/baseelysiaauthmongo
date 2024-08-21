@@ -1,7 +1,8 @@
 import { Elysia } from "elysia";
 import { config } from "dotenv";
 import "./utils/mongodb";
-import { setupRoutes } from "./routes/signupRoutes";
+import { setupSignupRoutes } from "./routes/signupRoutes";
+import { setupSigninRoutes } from "./routes/signinRoutes";
 
 // Load environment variables from .env file
 config();
@@ -10,7 +11,8 @@ config();
 const app = new Elysia();
 
 // Setup the routes
-setupRoutes(app);
+setupSignupRoutes(app);
+setupSigninRoutes(app);
 
 // Start the server
 app.listen(3000);
