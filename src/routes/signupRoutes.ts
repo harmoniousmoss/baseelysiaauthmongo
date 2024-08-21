@@ -2,6 +2,6 @@
 import { Elysia } from "elysia";
 import { signupHandler } from "../handlers/signupHandler";
 
-export const setupRoutes = (app: Elysia) => {
+export const setupSignupRoutes = (app: Elysia) => {
   app.post("/signup", signupHandler);
 };
