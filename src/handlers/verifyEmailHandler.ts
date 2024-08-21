@@ -1,5 +1,4 @@
-// src/handlers/verifyEmailHandler.ts
-import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { getClient } from "../utils/mongodb";
 
 export const verifyEmailHandler = async ({
@@ -9,25 +8,39 @@ export const verifyEmailHandler = async ({
 }) => {
   const { token } = query;
 
-  const db = getClient().db();
-  const user = await db.collection("users").findOne({});
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "your_jwt_secret"
+    ) as { email: string };
 
-  if (!user || !bcrypt.compareSync(user.merchant_email, token)) {
+    const db = getClient().db();
+    const user = await db
+      .collection("users")
+      .findOne({ merchant_email: decoded.email });
+
+    if (!user) {
+      return {
+        status: 400,
+        body: { error: "User not found." },
+      };
+    }
+
+    await db
+      .collection("users")
+      .updateOne(
+        { merchant_email: user.merchant_email },
+        { $set: { merchant_email_status: "verified" } }
+      );
+
+    return {
+      status: 200,
+      body: { message: "Email successfully verified." },
+    };
+  } catch (error) {
     return {
       status: 400,
       body: { error: "Invalid or expired token." },
     };
   }
-
-  await db
-    .collection("users")
-    .updateOne(
-      { merchant_email: user.merchant_email },
-      { $set: { merchant_email_status: "verified" } }
-    );
-
-  return {
-    status: 200,
-    body: { message: "Email successfully verified." },
-  };
 };
