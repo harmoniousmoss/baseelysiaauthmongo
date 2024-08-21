@@ -1,11 +1,11 @@
 // src/handlers/signupHandler.ts
 import bcrypt from "bcrypt";
-import { userSchema } from "../schemas/userSchema";
+import { signUpSchema } from "../schemas/userSchema";
 import { getClient } from "../utils/mongodb";
 import { SignupRequestBody } from "../interfaces/userInterfaces";
 
 export const signupHandler = async ({ body }: { body: SignupRequestBody }) => {
-  const result = userSchema.safeParse(body);
+  const result = signUpSchema.safeParse(body);
   if (!result.success) {
     return {
       status: 400,
