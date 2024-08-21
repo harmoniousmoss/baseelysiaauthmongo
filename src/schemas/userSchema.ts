@@ -1,7 +1,7 @@
 // src/schemas/userSchema.ts
 import { z } from "zod";
 
-export const userSchema = z.object({
+export const signUpSchema = z.object({
   merchant_name: z.string().min(1, "Merchant name is required"),
   merchant_status: z.enum(["pending", "approved"]).default("pending"),
   merchant_email: z.string().email("Invalid email format"),
