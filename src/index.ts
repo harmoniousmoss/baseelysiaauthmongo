@@ -1,5 +1,7 @@
 import { Elysia } from "elysia";
 import { config } from "dotenv";
+import { readFileSync } from "fs";
+import { join } from "path";
 import "./utils/mongodb";
 import { setupSignupRoutes } from "./routes/signupRoutes";
 import { setupSigninRoutes } from "./routes/signinRoutes";
@@ -8,8 +10,19 @@ import { setupVerifyEmailRoutes } from "./routes/verifyEmailRoutes";
 // Load environment variables from .env file
 config();
 
-// Initialize the Elysia app
 const app = new Elysia();
+
+// Serve the HTML file for the root route
+// Serve the HTML file for the root route
+app.get("/", () => {
+  const html = readFileSync(join(__dirname, "public", "index.html"), "utf8");
+  return new Response(html, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/html",
+    },
+  });
+});
 
 // Setup the routes
 setupSignupRoutes(app);
