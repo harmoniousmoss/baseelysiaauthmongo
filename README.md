@@ -6,11 +6,9 @@ Here is the basic Elysia.js with MongoDB Auth. This is a simple API that uses Mo
 - [x] User role
 - [x] User Login
 - [x] Email verification
-- [ ] User approval
-- [ ] User Logout
-- [ ] User Profile
+- [x] User approval
+- [ ] User List
 - [ ] User Update
 - [ ] User Delete
-- [ ] User List
 - [ ] User password reset
 - [ ] User middleware
