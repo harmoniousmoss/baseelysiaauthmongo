@@ -13,7 +13,6 @@ config();
 const app = new Elysia();
 
 // Serve the HTML file for the root route
-// Serve the HTML file for the root route
 app.get("/", () => {
   const html = readFileSync(join(__dirname, "public", "index.html"), "utf8");
   return new Response(html, {
