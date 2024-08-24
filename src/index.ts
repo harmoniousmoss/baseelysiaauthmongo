@@ -6,6 +6,7 @@ import "./utils/mongodb";
 import { setupSignupRoutes } from "./routes/signupRoutes";
 import { setupSigninRoutes } from "./routes/signinRoutes";
 import { setupVerifyEmailRoutes } from "./routes/verifyEmailRoutes";
+import { setupApproveUserRoutes } from "./routes/approveUserRoutes";
 
 // Load environment variables from .env file
 config();
@@ -27,6 +28,7 @@ app.get("/", () => {
 setupSignupRoutes(app);
 setupSigninRoutes(app);
 setupVerifyEmailRoutes(app);
+setupApproveUserRoutes(app);
 
 // Start the server
 app.listen(3000);
