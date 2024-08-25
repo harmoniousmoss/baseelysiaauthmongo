@@ -1,13 +1,11 @@
 // src/middleware/authMiddleware.ts
+
 import jwt from "jsonwebtoken";
 import { getClient } from "../utils/mongodb";
 import { ObjectId } from "mongodb";
 
-export const adminAuthMiddleware = async ({
-  headers,
-}: {
-  headers: Headers;
-}) => {
+// General authentication middleware for both admin and merchant roles
+export const authMiddleware = async ({ headers }: { headers: Headers }) => {
   const authHeader = headers.get("Authorization");
 
   if (!authHeader?.startsWith("Bearer ")) {
@@ -30,14 +28,14 @@ export const adminAuthMiddleware = async ({
       .collection("users")
       .findOne({ _id: new ObjectId(decoded.id) });
 
-    if (!user || user.merchant_role !== "admin") {
+    if (!user) {
       return {
         status: 403,
-        body: { error: "Access denied: Admins only" },
+        body: { error: "Access denied" },
       };
     }
 
-    // Set user info to request context (or return user object)
+    // Return user information to the next handler
     return { status: 200, user };
   } catch (error) {
     return {
@@ -45,4 +43,27 @@ export const adminAuthMiddleware = async ({
       body: { error: "Invalid or expired token" },
     };
   }
+};
+
+// Admin-specific middleware that extends the general authMiddleware
+export const adminAuthMiddleware = async ({
+  headers,
+}: {
+  headers: Headers;
+}) => {
+  const result = await authMiddleware({ headers });
+
+  if (result.status !== 200 || !result.user) {
+    return result;
+  }
+
+  const { user } = result;
+  if (user.merchant_role !== "admin") {
+    return {
+      status: 403,
+      body: { error: "Access denied: Admins only" },
+    };
+  }
+
+  return result;
 };
