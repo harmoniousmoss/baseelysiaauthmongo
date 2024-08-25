@@ -7,6 +7,7 @@ import { setupSignupRoutes } from "./routes/signupRoutes";
 import { setupSigninRoutes } from "./routes/signinRoutes";
 import { setupVerifyEmailRoutes } from "./routes/verifyEmailRoutes";
 import { setupApproveUserRoutes } from "./routes/approveUserRoutes";
+import { setupUserRoutes } from "./routes/userRoutes";
 
 // Load environment variables from .env file
 config();
@@ -29,6 +30,7 @@ setupSignupRoutes(app);
 setupSigninRoutes(app);
 setupVerifyEmailRoutes(app);
 setupApproveUserRoutes(app);
+setupUserRoutes(app);
 
 // Start the server
 app.listen(3000);
